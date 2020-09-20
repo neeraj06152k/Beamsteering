@@ -164,3 +164,62 @@ print('\tKanyakumari:', bsteer_cape, '\n',
       '\tJamnagar   :', bsteer_jam, '\n',
       '\tSrinagar   :', bsteer_snar, '\n',
       '\tGuwahati   :', bsteer_ghy, '\n', sep='')
+	  
+
+##############################################################################
+# Function to get Beamsteering Angles for a given Lat, Lon, Altitude
+
+def bsteer(lat = 10.903626, lon = 76.897956, elv = 315.0 ):
+   # Spherical Coordinates in degrees
+   # Format: S = (radius, Latitude_polar, Longitude_azimuth) 
+   urloc= (earth_radius+ elv, 90.0- lat, lon)
+   
+   urloc_gsat15 = rsc.rel_coord(urloc, gsat15)
+   
+   urloc_gsat15_local = [urloc_gsat15[0],
+                         urloc_gsat15[1] - 90.0 + lat,
+                         urloc_gsat15[2] - lon]
+
+   # bsteer_urloc = [urloc_gsat15_local[1], urloc_gsat15_local[2]]
+   
+   ax.plot(lon, lat, 
+           'ro', markersize=3, transform=ccrs.Geodetic())
+   ax.text(lon - 3.0, lat + 1.0, 
+           'Custom Location', fontsize=7, transform=ccrs.Geodetic())
+   
+   
+   return urloc_gsat15_local
+
+##############################################################################
+# While Loop
+
+while(True):
+    print('\nCalculate Beamsteering angles for:', 
+          '(Choose Approriate Option Number)',sep = ' ')
+    print('\t1. Calculate for AB2',
+          '\t2. Calculate for Custom Location',
+          '\t3. End the Script',sep = '\n')
+    f = input('\tChoose Your Option: ')
+    
+    if(f == '1'):
+        bsteer_urloc= bsteer()
+        print('\n','Polar and Azimuth angles of the Beam pointing towards the GSAT15: \n',
+              '(NOTE - The Format followed here is [polar, azimuth] in Degree)',sep='')
+        print('\n\tPolar, Azimuth = %f, %f'%(bsteer_urloc[1],bsteer_urloc[2]))
+        
+    elif(f == '2'):
+        print('Input your location\'s Latitude, Longitude and Altitude:')
+        urloc_lat = float(input('\tLatitude  : '))
+        urloc_lon = float(input('\tLongitude : '))
+        urloc_elv = float(input('\tAltitude  : '))
+        
+        bsteer_urloc= bsteer(urloc_lat, urloc_lon, urloc_elv)
+        print('\n','Polar and Azimuth angles of the Beam pointing towards the GSAT15:\n',
+              '(NOTE - The Format followed here is [polar, azimuth] in Degree)',sep='')
+        print('\n\tPolar, Azimuth = %f, %f'%(bsteer_urloc[1],bsteer_urloc[2]))
+        
+    else:
+        print('\n\n\t\tPROGRAM TERMINATED')
+        break
+    
+    input()
